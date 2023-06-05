@@ -1,0 +1,28 @@
+#!/usr/bin/env bb
+(require '[babashka.process :refer [shell]])
+
+(defn cmd [cmd]
+  (->> cmd
+       (shell {:out :string})
+       :out
+       str/split-lines
+       first))
+
+(defn sink-status []
+  (cmd "wpctl get-volume @DEFAULT_AUDIO_SINK@"))
+
+(defn source-status []
+  (cmd "wpctl get-volume @DEFAULT_AUDIO_SOURCE@"))
+
+(defn status->volume [status]
+  (-> status
+      (str/split #" ")
+      last
+      parse-double
+      (* 100)
+      int))
+
+(->> {:sink (status->volume (sink-status))
+      :source (status->volume (source-status))}
+     json/generate-string
+     println)

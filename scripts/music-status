@@ -1,0 +1,26 @@
+#!/usr/bin/env bb
+(require '[babashka.process :as p :refer [process destroy-tree]]
+         '[clojure.java.io :as io])
+
+(def playerctl-status-string
+  "{{playerName}}|{{lc(status)}}|{{artist}}|{{title}}|{{position}}|{{mpris:length}}")
+
+(defn split [cmd]
+  (str/split cmd #"\|"))
+
+(def playerctl-stream
+  (process
+   {:err :inherit
+    :shutdown destroy-tree}
+   (str "playerctl metadata -F --format " playerctl-status-string)))
+
+(with-open [rdr (io/reader (:out playerctl-stream))]
+  (binding [*in* rdr]
+    (loop []
+      (when-let [line (read-line)]
+        (->> line
+             split
+             (zipmap [:player :status :artist :title :position :length])
+             json/generate-string
+             println)
+        (recur)))))

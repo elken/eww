@@ -1,0 +1,26 @@
+#!/usr/bin/env bb
+(require '[babashka.process :as p :refer [shell process destroy-tree]]
+         '[babashka.cli :as cli]
+         '[clojure.java.io :as io])
+
+(defn valid-display? [display]
+  (->> "swaymsg -t get_outputs"
+       (shell {:out :string})
+       :out
+       (json/parse-string true)
+       (filter #())
+       ;; str/split-lines
+       ;; first
+       ;; (filter (fn [element]
+       ;;           (println element)
+       ;;           (str/starts-with? element (str "Output " display))))
+       ))
+(println (-> *command-line-args*
+             first
+             valid-display?))
+;; (when-let [display (-> *command-line-args*
+;;                        first
+;;                        valid-display?)]
+;;   (println (-> *command-line-args*
+;;                        first
+;;                        valid-display?)))

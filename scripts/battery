@@ -1,0 +1,42 @@
+#!/usr/bin/env bb
+(require '[clojure.java.shell :refer [sh]])
+
+(def battery-low "")
+(def battery-quarter "")
+(def battery-half "")
+(def battery-three-quarters "")
+(def battery-full "")
+(def battery-charging "")
+(def battery-danger "")
+(def battery-empty "")
+
+(defn percentage->icon [percentage]
+  (condp >= percentage
+    100 battery-full
+    75 battery-three-quarters
+    50 battery-half
+    25 battery-quarter
+    10 battery-low
+    5 battery-danger
+    0 battery-empty))
+
+(defn parse-output [output]
+  (let [[status percentage left] (str/split output #",")
+        percentage (parse-long (re-find #"\d+" percentage))
+        status (nth (str/split status #" ") 2)]
+    {:capacity percentage
+     :status status
+     :time (when left
+             (nth (str/split left #" ") 1))
+     :icon (if (= "Charging" status)
+             battery-charging
+             (percentage->icon percentage))}))
+
+(->> (list "acpi" "-b")
+     (apply sh)
+     :out
+     str/split-lines
+     first
+     parse-output
+     json/generate-string
+     println)

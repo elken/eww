@@ -1,0 +1,153 @@
+(defpoll battery :interval "5s" "scripts/battery")
+(deflisten music-status :initial "" "scripts/music-status")
+(defpoll volume-status :interval "1s" "scripts/volume-status")
+(defpoll cpu-usage :interval "1s" "scripts/cpu-usage")
+(defpoll ram-usage :interval "1s" "scripts/ram-usage")
+(defpoll time :interval "1s" "date '+%H:%M %b %d, %Y'")
+(deflisten window :initial "" "scripts/window-name")
+
+(defwidget metric [label value onchange]
+           (box :orientation "v"
+                :class "metric"
+                :space-evenly false
+                :halign "center"
+                (label
+                 :limit-width 40
+                 :text label)
+                (scale :min 0
+                       :max 101
+                       :active {onchange != ""}
+                       :value {value ?: 0}
+                       :onchange onchange)))
+
+(defwidget icon-pill [icon name icon-class]
+           (box :class "${name}__wrapper icon-pill"
+                :orientation "h"
+                :space-evenly false
+                :halign "center"
+                (label
+                 :class "icon-pill__icon ${name}__icon ${icon-class}"
+                 :text icon)
+                (children)))
+
+(defwidget music []
+           (box
+            :visible {music-status != ""}
+            (icon-pill
+             :name "music"
+             :icon {music-status.status == "playing" ? " " : " "}
+             :icon-class {music-status.status}
+             (metric
+              :label "${music-status.artist} - ${music-status.title}"
+              :value {round(music-status.position / music-status.length * 100, 0)}
+              :onchange ""))))
+
+(defwidget volume []
+           (box
+            :orientation "h"
+            :space-evenly false
+            :class "volume-wrapper"
+            :visible {volume-status != ""}
+            (icon-pill
+             :name "volume-sink"
+             :icon ""
+             :icon-class "volume-sink"
+             (scale :min 0
+                    :max 101
+                    :value {volume-status.sink}))
+            (icon-pill
+             :name "volume-source"
+             :icon ""
+             :icon-class "volume-source"
+             (scale :min 0
+                    :max 101
+                    :value {volume-status.source}))))
+
+(defwidget cpu []
+           (icon-pill
+            :name "cpu"
+            :icon ""
+            :icon-class "cpu"
+            (box
+             :orientation "h"
+             :space-evenly false
+             :class "cpu-wrapper"
+             (for cpu in cpu-usage
+                  (scale
+                   :min 0
+                   :max 101
+                   :class {cpu < 25 ? "low" :
+                               cpu < 50 ? "medium" :
+                               cpu < 90 ? "high" : "max"}
+                   :value cpu
+                   :flipped true
+                   :orientation "v")))))
+
+(defwidget ram []
+           (icon-pill
+            :name "ram"
+            :icon ""
+            :icon-class "ram"
+            (box
+             :orientation "h"
+             :space-evenly false
+             :class "ram-wrapper"
+             (for ram in ram-usage
+                  (scale
+                   :min 0
+                   :max 101
+                   :class {ram < 25 ? "low" :
+                               ram < 50 ? "medium" :
+                               ram < 90 ? "high" : "max"}
+                   :value ram
+                   :flipped true
+                   :orientation "v")))))
+
+(defwidget clock []
+           (icon-pill
+            :name "clock"
+            :icon ""
+            :icon-class "clock"
+            (label
+             :text time)))
+
+(defwidget left []
+           (box
+            :space-evenly false
+            :halign "start"
+            (label :text "hi")))
+
+(defwidget center []
+           (box
+            :space-evenly false
+            :halign "fill"
+            :class "window-wrapper"
+            (image
+             :image-width 24
+             :path {window.icon}
+             :visible {window.icon != ""})
+            (label :text {window.name})))
+
+(defwidget right []
+           (box
+            :space-evenly false
+            :halign "end"
+            (music)
+            (cpu)
+            (ram)
+            (volume)
+            (clock)))
+
+(defwindow bar
+           :monitor 2
+           :geometry (geometry :x "0%"
+                               :y "20px"
+                               :width "90%"
+                               :height "32px"
+                               :anchor "top center")
+           :stacking "fg"
+           (centerbox
+            :orientation "h"
+            (left)
+            (center)
+            (right)))

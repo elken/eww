@@ -1,0 +1,27 @@
+#!/usr/bin/env bb
+(require '[babashka.process :refer [shell]])
+
+(defn ram-lines []
+  (-> "free"
+      (shell {:out :string})
+      :out
+      str/split-lines
+      rest))
+
+(->> (ram-lines)
+     (reduce
+      (fn [acc cpu]
+        (let [[_ & values] (str/split cpu #"\s+")
+              values (map parse-long values)]
+          (when values
+            (conj
+             acc
+             (->> 0
+                  (nth values)
+                  (/ (nth values 1))
+                  (*
+                   100)
+                  int)))))
+      [])
+     json/generate-string
+     println)

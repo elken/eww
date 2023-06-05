@@ -1,0 +1,143 @@
+$nord0: #2e3440;
+$nord1: #3b4252;
+$nord2: #434c5e;
+$nord3: #4c566a;
+$nord4: #d8dee9;
+$nord5: #e5e9f0;
+$nord6: #eceff4;
+$nord7: #8fbcbb;
+$nord8: #88c0d0;
+$nord9: #81a1c1;
+$nord10: #5e81ac;
+$nord11: #bf616a;
+$nord12: #d08770;
+$nord13: #ebcb8b;
+$nord14: #a3be8c;
+$nord15: #b48ead;
+
+* {
+  all: unset; //Unsets everything so you can style everything from scratch
+  font-family: FontAwesome, Montserrat, Helvetica, Arial, sans-serif;
+}
+
+//Global Styles
+.bar {
+  background-color: $nord1;
+  color: $nord4;
+}
+
+// Styles on classes (see eww.yuck for more information)
+
+.sidestuff slider {
+  color: #ffd5cd;
+}
+
+scale trough highlight {
+  background-color: $nord15;
+}
+
+scale trough {
+  min-height: 30px;
+  min-width: 3px;
+  background-color: $nord0;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+scale.horizontal trough highlight {
+  border-radius: 10px;
+}
+
+scale.horizontal trough {
+  border-radius: 50px;
+  min-height: 3px;
+  min-width: 50px;
+}
+
+.label-ram {
+  font-size: large;
+}
+.workspaces button:hover {
+  color: #D35D6E;
+}
+
+.music__wrapper {
+  & .metric scale trough {
+    background-color: $nord0;
+  }
+
+  & .metric scale trough highlight {
+    background-color: $nord15;
+  }
+
+  & .music__icon {
+    color: $nord6;
+
+    &.playing {
+      background-color: $nord14;
+    }
+
+    &.paused {
+      background-color: $nord13;
+    }
+  }
+}
+
+.icon-pill {
+  border-radius: 1rem;
+  background-color: $nord2;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  margin: 7px 3px;
+
+  & .icon-pill__icon {
+    padding: 0 5px 0 12px;
+    border-radius: 1rem;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  & .metric {
+    margin: 3px;
+    padding: 0 5px;
+
+    & scale {
+      padding-top: 3px;
+    }
+  }
+}
+
+$comps: ram, cpu;
+@each $comp in $comps {
+  .#{$comp}-wrapper {
+    margin: 2px 8px 2px 2px;
+
+    & scale trough {
+      margin: 5px;
+      min-height: 20px;
+    }
+
+    & .low trough highlight {
+      background-color: $nord14;
+    }
+
+    & .medium trough highlight {
+      background-color: $nord13;
+    }
+
+    & .high trough highlight {
+      background-color: $nord12;
+    }
+
+    & .max trough highlight {
+      background-color: $nord11;
+    }
+  }
+}
+
+.clock__wrapper label {
+  margin: 2px 8px 2px 2px;
+}
+
+.window-wrapper image {
+  margin-right: 10px;
+                    }
