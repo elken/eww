@@ -1,26 +1,107 @@
 #!/usr/bin/env bb
 (require '[babashka.process :as p :refer [shell process destroy-tree]]
-         '[babashka.cli :as cli]
+         '[clojure.pprint :as pprint]
          '[clojure.java.io :as io])
 
-(defn valid-display? [display]
-  (->> "swaymsg -t get_outputs"
-       (shell {:out :string})
-       :out
-       (json/parse-string true)
-       (filter #())
-       ;; str/split-lines
-       ;; first
-       ;; (filter (fn [element]
-       ;;           (println element)
-       ;;           (str/starts-with? element (str "Output " display))))
-       ))
-(println (-> *command-line-args*
-             first
-             valid-display?))
-;; (when-let [display (-> *command-line-args*
-;;                        first
-;;                        valid-display?)]
-;;   (println (-> *command-line-args*
-;;                        first
-;;                        valid-display?)))
+(def workspace-stream
+  (process
+   {:err :inherit
+    :shutdown destroy-tree}
+   (str "swaymsg -t subscribe -m \"['workspace', 'window']\"")))
+
+(defn- sway-cmd [type]
+  (as-> (str "swaymsg -t " type) clients
+    (shell {:out :string} clients)
+    (:out clients)
+    (json/parse-string clients true)))
+
+(defn- get-tree []
+  (sway-cmd "get_tree"))
+
+(defn- get-workspaces []
+  (sway-cmd "get_workspaces"))
+
+(defn- get-displays []
+  (as-> (get-tree) tree
+    (:nodes tree)
+    (remove (fn [cand] (#{"__i3"} (:name cand))) tree)))
+
+(defn workspaces-for-displays []
+  (let [displays (get-displays)]
+    (for [display displays]
+      (do
+        display))))
+
+(defn gtk-theme []
+  (-> {:out :string}
+      (shell "gsettings get org.gnome.desktop.interface icon-theme")
+      :out
+      str/split-lines
+      first
+      (str/replace #"'" "")))
+
+(defn get-icon [name]
+  (when name
+    (first
+     (filter
+      fs/exists?
+      (flatten
+       (for [theme [(gtk-theme) "hicolor"]]
+         (for [path ["/scalable/apps/" "/apps/scalable/"]]
+           (for [file [name (str/lower-case name)]]
+             (str "/usr/share/icons/" theme path file ".svg")))))))))
+
+(defn- parse-client [client]
+  (merge
+   (select-keys client [:name :focused :urgent :visible])
+   {:icon (or (get-icon (:app_id client))
+              (get-icon (get-in client [:window_properties :instance]))
+              (get-icon (get-in client [:window_properties :class]))
+              "")}))
+
+(defn- representation->clients [workspace]
+  (reduce
+   (fn [clients client]
+     (conj
+      clients
+      (if (= (:layout client) "tabbed")
+        (map parse-client (:nodes client))
+        (parse-client client))))
+   []
+   (:nodes workspace)))
+
+(defn- some-in-tree [key tree]
+  (true? (or (some key tree)
+             (some (fn [container]
+                     (some key (:nodes container)))
+                   tree))))
+
+(defn workspace-tree []
+  (reduce
+   (fn [result display]
+     (let [nodes (:nodes display)]
+       (conj
+        result
+        (map (fn [workspace]
+               {:name (:name workspace)
+                :clients (representation->clients workspace)
+                :focused (some-in-tree :focused (:nodes workspace))
+                :visible (some-in-tree :visible (:nodes workspace))})
+             nodes))))
+   []
+   (get-displays)))
+
+(defn output []
+  (->> (workspace-tree)
+       json/generate-string
+       println))
+
+(output)
+
+(with-open [rdr (io/reader (:out workspace-stream))]
+  (binding [*in* rdr]
+    (loop []
+      (when-let [line (-> (read-line) (json/parse-string true))]
+        (when (= "focus" (:change line))
+          (output))
+        (recur)))))
