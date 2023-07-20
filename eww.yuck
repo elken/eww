@@ -55,6 +55,17 @@
         :text icon)
        (children)))
 
+(defwidget system-bar [value]
+  (scale
+   :min 0
+   :max 101
+   :class {value < 25 ? "low" :
+                 value < 50 ? "medium" :
+                 value < 90 ? "high" : "max"}
+   :value {value}
+   :flipped true
+   :orientation "v"))
+
 (defwidget music []
   (box
    :visible {music-status != ""}
@@ -105,15 +116,8 @@
      (revealer
       :transition "slideleft"
       :reveal {! cpu-expanded}
-      (scale
-       :min 0
-       :max 101
-       :class {EWW_CPU.avg < 25 ? "low" :
-                       EWW_CPU.avg < 50 ? "medium" :
-                       EWW_CPU.avg < 90 ? "high" : "max"}
-       :value {EWW_CPU.avg}
-       :flipped true
-       :orientation "v"))
+      (system-bar
+       :value {EWW_CPU.avg}))
      (revealer
       :transition "slideright"
       :reveal cpu-expanded
@@ -122,15 +126,8 @@
        :orientation "h"
        :space-evenly false
        (for cpu in {EWW_CPU.cores}
-            (scale
-             :min 0
-             :max 101
-             :class {cpu.usage < 25 ? "low" :
-                         cpu.usage < 50 ? "medium" :
-                         cpu.usage < 90 ? "high" : "max"}
-             :value {cpu.usage}
-             :flipped true
-             :orientation "v"))))))))
+            (system-bar
+             :value {cpu.usage}))))))))
 
 (defwidget ram []
   (icon-pill
@@ -142,15 +139,8 @@
     :space-evenly false
     :class "ram-wrapper"
     (for ram in ram-usage
-         (scale
-          :min 0
-          :max 101
-          :class {ram < 25 ? "low" :
-                      ram < 50 ? "medium" :
-                      ram < 90 ? "high" : "max"}
-          :value ram
-          :flipped true
-          :orientation "v")))))
+         (system-bar
+          :value ram)))))
 
 (defwidget clock []
   (icon-pill
