@@ -14,10 +14,12 @@ $nord12: #d08770;
 $nord13: #ebcb8b;
 $nord14: #a3be8c;
 $nord15: #b48ead;
+$nord-unfocused: #8e95a4;
 
 * {
   all: unset; //Unsets everything so you can style everything from scratch
   font-family: FontAwesome, Montserrat, Helvetica, Arial, sans-serif;
+  font-size: 13px;
 }
 
 //Global Styles
@@ -140,4 +142,111 @@ $comps: ram, cpu;
 
 .window-wrapper image {
   margin-right: 10px;
-                    }
+}
+
+.workspace-wrapper {
+  padding: 0 5px;
+  transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.68);
+}
+
+.workspace-wrapper.visible {
+  background: $nord2;
+  color: $nord-unfocused;
+  border-bottom: 3px solid $nord5;
+}
+
+.workspace-wrapper.focused {
+  background: $nord15;
+  color: $nord4;
+}
+
+.workspace__icon-wrapper {
+  padding-left: 5px;
+}
+
+menubar {
+  border-radius: 1rem;
+  background-color: $nord2;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  margin: 7px 3px;
+  padding: 0 7px;
+
+  & > menuitem {
+    border-radius: 1rem;
+  }
+
+  & menuitem:hover {
+    background: $nord3;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+  }
+
+  & menu {
+    background: $nord0;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    border-radius: 1rem;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+
+    separator {
+      border-bottom: 2px $nord2 solid;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    & menuitem {
+      padding: 5px 15px;
+
+
+      &:disabled {
+        color: $nord-unfocused;
+      }
+
+      &:hover {
+        background: $nord15;
+      }
+
+    }
+  }
+}
+
+check {
+  border-radius: 9999px;
+  min-width: 13px;
+  min-height: 13px;
+  background: rgba(255, 255, 255, 0.2);
+  margin-right: 0.5rem;
+  box-shadow: 0px 4px 4px -3px rgba(0, 0, 0, 0.5);
+}
+
+check:checked {
+  background: $nord15;
+  box-shadow: inset 0px 4px 4px -3px rgba(0, 0, 0, 0.5);
+}
+
+menu > menuitem check:checked ~ label {
+  font-weight: 600;
+}
+
+menu > menuitem label:hover ~ check:checked {
+  color: $nord4;
+}
+
+.volume-wrapper .icon-pill {
+  padding: 2px;
+}
+
+.volume-sink__wrapper {
+  margin: 6px 0 0 0;
+  padding: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.volume-source__wrapper {
+  padding: 40px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin: 0 0 6px 0;
+}
