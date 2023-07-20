@@ -2,7 +2,6 @@
 (defpoll battery :interval "5s" "scripts/battery")
 (deflisten music-status :initial "" "scripts/music-status")
 (defpoll volume-status :interval "1s" "scripts/volume")
-(defpoll cpu-usage :interval "1s" "scripts/cpu-usage")
 (defpoll ram-usage :interval "1s" "scripts/ram-usage")
 (defpoll time :interval "1s" "date '+%H:%M %b %d, %Y'")
 (deflisten window :initial "" "scripts/window-name")
@@ -122,14 +121,14 @@
       (box
        :orientation "h"
        :space-evenly false
-       (for cpu in cpu-usage
+       (for cpu in {EWW_CPU.cores}
             (scale
              :min 0
              :max 101
-             :class {cpu < 25 ? "low" :
-                         cpu < 50 ? "medium" :
-                         cpu < 90 ? "high" : "max"}
-             :value cpu
+             :class {cpu.usage < 25 ? "low" :
+                         cpu.usage < 50 ? "medium" :
+                         cpu.usage < 90 ? "high" : "max"}
+             :value {cpu.usage}
              :flipped true
              :orientation "v"))))))))
 
