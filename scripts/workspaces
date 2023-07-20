@@ -17,19 +17,10 @@
 (defn- get-tree []
   (sway-cmd "get_tree"))
 
-(defn- get-workspaces []
-  (sway-cmd "get_workspaces"))
-
 (defn- get-displays []
   (as-> (get-tree) tree
     (:nodes tree)
     (remove (fn [cand] (#{"__i3"} (:name cand))) tree)))
-
-(defn workspaces-for-displays []
-  (let [displays (get-displays)]
-    (for [display displays]
-      (do
-        display))))
 
 (defn gtk-theme []
   (-> {:out :string}
