@@ -1,6 +1,5 @@
 #!/usr/bin/env bb
 (require '[babashka.process :as p :refer [shell process destroy-tree]]
-         '[clojure.pprint :as pprint]
          '[clojure.java.io :as io])
 
 (def workspace-stream
@@ -102,6 +101,5 @@
   (binding [*in* rdr]
     (loop []
       (when-let [line (-> (read-line) (json/parse-string true))]
-        (when (= "focus" (:change line))
-          (output))
+        (output)
         (recur)))))
