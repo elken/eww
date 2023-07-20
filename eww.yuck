@@ -160,9 +160,9 @@
    (label
     :text time)))
 
-(defwidget left []
+(defwidget left [index]
   (workspace-widget
-   :spaces {workspaces[2]}))
+   :spaces {workspaces[index]}))
 
 (defwidget center []
   (box
@@ -171,8 +171,7 @@
    :class "window-wrapper"
    (image
     :image-width 24
-    :path {window.icon}
-    :visible {window.icon != ""})
+    :path {window.icon ?: "./assets/sway.png"})
    (label :text {window.name})))
 
 (defwidget right []
@@ -186,16 +185,49 @@
    (clock)
    (systray :pack-direction "ltr")))
 
-(defwindow bar
-  :monitor 2
+;; TODO Make this much less crap...
+
+(defwindow bar-eDP-1
+  :monitor 0
   :geometry (geometry :x "0%"
-                      :y "20px"
-                      :width "90%"
-                      :height "32px"
+                      :y "0%"
+                      :width "100%"
                       :anchor "top center")
   :stacking "fg"
+  :exclusive true
   (centerbox
    :orientation "h"
-   (left)
+   (left
+    :index 0)
+   (center)
+   (right)))
+
+(defwindow bar-DP-2
+  :monitor 1
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "100%"
+                      :anchor "top center")
+  :stacking "fg"
+  :exclusive true
+  (centerbox
+   :orientation "h"
+   (left
+    :index 1)
+   (center)
+   (right)))
+
+(defwindow bar-DP-3
+  :monitor 2
+  :geometry (geometry :x "0%"
+                      :y "0%"
+                      :width "100%"
+                      :anchor "top center")
+  :stacking "fg"
+  :exclusive true
+  (centerbox
+   :orientation "h"
+   (left
+    :index 2)
    (center)
    (right)))
