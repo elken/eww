@@ -22,6 +22,22 @@
       (* 100)
       int))
 
+(try
+  (let [source (first *command-line-args*)
+        volume (-> *command-line-args* second parse-long)]
+    (when (and source volume)
+      (println
+       (format
+        "wpctl set-volume -l 1.0 %s %f"
+        source
+        (/ volume 100.0)))
+      (shell
+       (format
+        "wpctl set-volume -l 1.0 %s %f "
+        source
+        (/ volume 100.0)))))
+  (catch Exception _))
+
 (->> {:sink (status->volume (sink-status))
       :source (status->volume (source-status))}
      json/generate-string
