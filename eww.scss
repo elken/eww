@@ -146,18 +146,19 @@ $comps: ram, cpu;
 
 .workspace-wrapper {
   padding: 0 5px;
+  color: $nord-unfocused;
   transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.68);
 }
 
 .workspace-wrapper.visible {
   background: $nord2;
-  color: $nord-unfocused;
   border-bottom: 3px solid $nord5;
 }
 
 .workspace-wrapper.focused {
   background: $nord15;
   color: $nord4;
+  font-weight: 600;
 }
 
 .workspace__icon-wrapper {
