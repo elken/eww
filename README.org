@@ -1,0 +1,8 @@
+#+title: EWW
+#+author: Ellis Kenyő
+#+date: 2023-07-20
+#+latex_class: chameleon
+
+My lisp-y bar config
+
+[[file:assets/demo.png]]
