@@ -22,13 +22,13 @@
 (defn get-icon [name]
   (when name
     (first
-     (filter
-      fs/exists?
-      (flatten
-       (for [theme [(gtk-theme) "hicolor"]]
-         (for [path ["/scalable/apps/" "/apps/scalable/"]]
-           (for [file [name (str/lower-case name)]]
-             (str "/usr/share/icons/" theme path file ".svg")))))))))
+     (for [theme [(gtk-theme) "hicolor"]
+           path ["scalable/apps" "apps/scalable"]
+           file [name (str/lower-case name)]
+           root ["/usr/share/icons" "~/.icons" "~/.local/share/icons"]
+           :let [file (fs/expand-home (fs/path root theme path (str file ".svg")))]
+           :when (fs/exists? file)]
+       (str file)))))
 
 (defn- get-tree []
   (as-> (str "swaymsg -t get_tree") clients
@@ -53,11 +53,11 @@
   (binding [*in* rdr]
     (loop []
       (when-let [line (-> (read-line) (json/parse-string true))]
-        (->> {:name (get-in line [:container :name])
-              :icon (or (get-icon (get-in line [:container :app_id]))
-                        (get-icon (get-in line [:container :window_properties :instance]))
-                        (get-icon (get-in line [:container :window_properties :class]))
-                        "")}
-             json/generate-string
-             println)
+        (->>  {:name (get-in line [:container :name])
+               :icon (or (get-icon (get-in line [:container :app_id]))
+                         (get-icon (get-in line [:container :window_properties :class]))
+                         (get-icon (get-in line [:container :window_properties :instance]))
+                         "")}
+              json/generate-string
+              println)
         (recur)))))
