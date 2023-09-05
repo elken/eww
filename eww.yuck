@@ -16,20 +16,22 @@
    :halign "fill"
    :class "workspaces-wrapper"
    (for workspace in spaces
-        (box
-         :space-evenly false
-         :halign "fill"
-         :class "workspace-wrapper ${workspace.visible ? 'visible' : ''} ${workspace.focused ? 'focused' : ''}"
-         (label :text {workspace.name})
+        (button
+         :onclick "sway workspace ${workspace.name}"
          (box
-          :space-evenly true
+          :space-evenly false
           :halign "fill"
-          :class "workspace__icon-wrapper"
-          (for client in {workspace.clients}
-               (image
-                :image-width 24
-                :path {client.icon}
-                :visible {client.icon != ""})))))))
+          :class "workspace-wrapper ${workspace.visible ? 'visible' : ''} ${workspace.focused ? 'focused' : ''}"
+          (label :text {workspace.name})
+          (box
+           :space-evenly true
+           :halign "fill"
+           :class "workspace__icon-wrapper"
+           (for client in {workspace.clients}
+                (image
+                 :image-width 24
+                 :path {client.icon}
+                 :visible {client.icon != ""}))))))))
 
 (defwidget metric [label value onchange]
   (box :orientation "v"
