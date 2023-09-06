@@ -6,6 +6,7 @@
 (defpoll time :interval "1s" "date '+%a %b %d, %Y  %H:%M'")
 (deflisten window :initial "" "scripts/window-name")
 (deflisten workspaces :initial "" "scripts/workspaces")
+(deflisten notifications :inital "" "scripts/notifications")
 
 ;; Toggles
 (defvar cpu-expanded false)
@@ -148,6 +149,15 @@
    (label
     :text time)))
 
+(defwidget swaync []
+					 (box :class "notifications-wrapper"
+								(button
+								 :visible "which swaync-client"
+								 :onclick "sleep 0.1; swaync-client -t -sw"
+								 :onrightclick "sleep 0.1; swaync-client -d -sw"
+								 (box
+									(label :markup {notifications})))))
+
 (defwidget left [index]
   (workspace-widget
    :spaces {workspaces[index]}))
@@ -174,7 +184,8 @@
    (volume)
    (clock)
    (systray :pack-direction "ltr"
-            :icon-size 16)))
+            :icon-size 16)
+	 (swaync)))
 
 ;; TODO Make this much less crap...
 

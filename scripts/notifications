@@ -1,0 +1,22 @@
+#!/usr/bin/env bb
+(require '[babashka.process :refer [shell process destroy-tree]]
+         '[clojure.java.io :as io])
+
+(def pgrep-stream
+  (process
+   {:err :inherit
+    :shutdown destroy-tree}
+   (str "swaync-client -swb")))
+
+(with-open [rdr (io/reader (:out pgrep-stream))]
+  (binding [*in* rdr]
+    (loop []
+      (when-let [line (-> (read-line) (json/parse-string true) :class)]
+        (println
+         (condp re-find line
+           #"^(inhibited-)?notification" "<span foreground='red'><sup></sup></span>"
+           #"^(inhibited-)?none" ""
+           #"^dnd-(inhibited-)?notification" "<span foreground='red'><sup></sup></span>"
+           #"^(dnd-inhibited-)?none" ""
+           "miss"))
+        (recur)))))
