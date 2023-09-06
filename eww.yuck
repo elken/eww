@@ -3,7 +3,7 @@
 (deflisten music-status :initial "" "scripts/music-status")
 (defpoll volume-status :interval "1s" "scripts/volume")
 (defpoll ram-usage :interval "1s" "scripts/ram-usage")
-(defpoll time :interval "1s" "date '+%b %d, %Y  %H:%M'")
+(defpoll time :interval "1s" "date '+%a %b %d, %Y  %H:%M'")
 (deflisten window :initial "" "scripts/window-name")
 (deflisten workspaces :initial "" "scripts/workspaces")
 
