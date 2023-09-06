@@ -102,8 +102,7 @@
 
 (defwidget cpu []
   (eventbox
-   :onhover "eww update cpu-expanded=true"
-   :onhoverlost "eww update cpu-expanded=false"
+   :onclick "${EWW_CMD} update cpu-expanded=${!cpu-expanded}"
    (icon-pill
     :name "cpu"
     :icon ""
