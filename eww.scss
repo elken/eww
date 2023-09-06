@@ -19,7 +19,7 @@ $nord-unfocused: #8e95a4;
 * {
   all: unset; //Unsets everything so you can style everything from scratch
   font-family: FontAwesome, Montserrat, Helvetica, Arial, sans-serif;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 //Global Styles
@@ -42,7 +42,6 @@ scale trough {
   min-height: 30px;
   min-width: 3px;
   background-color: $nord0;
-  margin-left: 10px;
   margin-right: 10px;
 }
 
@@ -54,13 +53,6 @@ scale.horizontal trough {
   border-radius: 50px;
   min-height: 3px;
   min-width: 50px;
-}
-
-.label-ram {
-  font-size: large;
-}
-.workspaces button:hover {
-  color: #D35D6E;
 }
 
 .music__wrapper {
@@ -89,7 +81,7 @@ scale.horizontal trough {
   border-radius: 1rem;
   background-color: $nord2;
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-  margin: 7px 3px;
+  margin: 5px 3px;
 
   & .icon-pill__icon {
     padding: 0 5px 0 12px;
@@ -173,7 +165,8 @@ menubar {
   padding: 0 7px;
 
   & > menuitem {
-    border-radius: 1rem;
+    border-radius: 0.5rem;
+    padding: 0 0.2rem;
   }
 
   & menuitem:hover {
@@ -235,20 +228,8 @@ menu > menuitem label:hover ~ check:checked {
   color: $nord4;
 }
 
-.volume-wrapper .icon-pill {
-  padding: 2px;
-}
-
-.volume-sink__wrapper {
-  margin: 6px 0 0 0;
-  padding: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.volume-source__wrapper {
-  padding: 40px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  margin: 0 0 6px 0;
+tooltip {
+  background-color: $nord1;
+  color: $nord4;
+  border-radius: 0.5rem;
 }

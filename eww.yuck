@@ -13,19 +13,15 @@
 (defwidget workspace-widget [spaces]
   (box
    :space-evenly false
-   :halign "fill"
    :class "workspaces-wrapper"
    (for workspace in spaces
         (button
          :onclick "sway workspace ${workspace.name}"
          (box
           :space-evenly false
-          :halign "fill"
           :class "workspace-wrapper ${workspace.visible ? 'visible' : ''} ${workspace.focused ? 'focused' : ''}"
           (label :text {workspace.name})
           (box
-           :space-evenly true
-           :halign "fill"
            :class "workspace__icon-wrapper"
            (for client in {workspace.clients}
                 (image
@@ -82,7 +78,7 @@
 
 (defwidget volume []
   (box
-   :orientation "v"
+   :orientation "h"
    :space-evenly false
    :class "volume-wrapper"
    :visible {volume-status != ""}
@@ -164,7 +160,9 @@
    (image
     :image-width 24
     :path {window.icon ?: "./assets/sway.png"})
-   (label :text {window.name})))
+   (label :text {window.name}
+          :limit-width 50
+          :tooltip {window.name})))
 
 (defwidget right []
   (box
@@ -175,7 +173,8 @@
    (ram)
    (volume)
    (clock)
-   (systray :pack-direction "ltr")))
+   (systray :pack-direction "ltr"
+            :icon-size 16)))
 
 ;; TODO Make this much less crap...
 
@@ -188,6 +187,7 @@
   :stacking "fg"
   :exclusive true
   (centerbox
+   :class "bar"
    :orientation "h"
    (left
     :index 0)
@@ -203,6 +203,7 @@
   :stacking "fg"
   :exclusive true
   (centerbox
+   :class "bar"
    :orientation "h"
    (left
     :index 1)
@@ -218,6 +219,7 @@
   :stacking "fg"
   :exclusive true
   (centerbox
+   :class "bar"
    :orientation "h"
    (left
     :index 2)
