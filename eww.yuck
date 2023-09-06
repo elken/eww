@@ -157,12 +157,12 @@
    :space-evenly false
    :halign "fill"
    :class "window-wrapper"
+   :tooltip {window.name}
    (image
     :image-width 24
     :path {window.icon ?: "./assets/sway.png"})
    (label :text {window.name}
-          :limit-width 50
-          :tooltip {window.name})))
+          :limit-width 50)))
 
 (defwidget right []
   (box
