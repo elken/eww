@@ -5,6 +5,9 @@
 (def playerctl-status-string
   "{{playerName}}|{{lc(status)}}|{{artist}}|{{title}}|{{position}}|{{mpris:length}}")
 
+(def ignored-players
+  ["firefox"])
+
 (defn split [cmd]
   (str/split cmd #"\|"))
 
@@ -12,7 +15,7 @@
   (process
    {:err :inherit
     :shutdown destroy-tree}
-   (str "playerctl metadata -F --format " playerctl-status-string)))
+   (format "playerctl metadata --ignore-player=%s -F --format %s" (str/join "," ignored-players) playerctl-status-string)))
 
 (with-open [rdr (io/reader (:out playerctl-stream))]
   (binding [*in* rdr]
