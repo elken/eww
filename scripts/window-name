@@ -19,16 +19,29 @@
       first
       (str/replace #"'" "")))
 
+(defn flatpak-name [class]
+  (->> (shell {:out :string} "flatpak list --app")
+       :out
+       str/split-lines
+       (some
+        (fn [line]
+          (let [[name id & _] (str/split line #"\t")]
+            (when (= name class)
+              id))))))
+
 (defn get-icon [name]
   (when name
     (first
-     (for [theme [(gtk-theme) "hicolor"]
-           path ["scalable/apps" "apps/scalable"]
-           file [name (str/lower-case name)]
-           root ["/usr/local/share/icons" "/usr/share/icons" "~/.icons" "~/.local/share/icons"]
-           :let [file (fs/expand-home (fs/path root theme path (str file ".svg")))]
-           :when (fs/exists? file)]
-       (str file)))))
+     (remove
+      nil?
+      (flatten
+       (for [theme [(gtk-theme) "hicolor"]]
+         (for [path ["scalable/apps" "apps/scalable"]]
+           (for [file [name (str/lower-case name) (flatpak-name name)]]
+             (for [root ["/usr/local/share/icons" "/usr/share/icons" "~/.icons" "~/.local/share/icons" "/var/lib/flatpak/exports/share/icons"]]
+               (let [file (fs/expand-home (fs/path root theme path (str file ".svg")))]
+                 (when (fs/exists? file)
+                   (str file))))))))))))
 
 (defn- get-tree []
   (as-> (str "swaymsg -t get_tree") clients
