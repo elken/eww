@@ -36,7 +36,7 @@
      (for [theme [(gtk-theme) "hicolor"]
            path ["scalable/apps" "apps/scalable"]
            file [name (str/lower-case name)]
-           root ["/usr/share/icons" "~/.icons" "~/.local/share/icons"]
+           root ["/usr/local/share/icons" "/usr/share/icons" "~/.icons" "~/.local/share/icons"]
            :let [file (fs/expand-home (fs/path root theme path (str file ".svg")))]
            :when (fs/exists? file)]
        (str file)))))
