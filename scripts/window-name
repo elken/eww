@@ -29,7 +29,7 @@
             (when (= name class)
               id))))))
 
-(defn get-icon [name]
+(defn find-icon [name]
   (when name
     (first
      (remove
@@ -42,6 +42,8 @@
                (let [file (fs/expand-home (fs/path root theme path (str file ".svg")))]
                  (when (fs/exists? file)
                    (str file))))))))))))
+
+(def get-icon (memoize find-icon))
 
 (defn- get-tree []
   (as-> (str "swaymsg -t get_tree") clients
