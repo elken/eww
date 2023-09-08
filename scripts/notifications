@@ -1,14 +1,14 @@
 #!/usr/bin/env bb
-(require '[babashka.process :refer [shell process destroy-tree]]
+(require '[babashka.process :refer [process destroy-tree]]
          '[clojure.java.io :as io])
 
-(def pgrep-stream
+(def swaync-stream
   (process
    {:err :inherit
     :shutdown destroy-tree}
    (str "swaync-client -swb")))
 
-(with-open [rdr (io/reader (:out pgrep-stream))]
+(with-open [rdr (io/reader (:out swaync-stream))]
   (binding [*in* rdr]
     (loop []
       (when-let [line (-> (read-line) (json/parse-string true) :class)]
