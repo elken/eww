@@ -75,8 +75,11 @@
         (map (fn [workspace]
                {:name (:name workspace)
                 :clients (representation->clients workspace)
-                :focused (some-in-tree :focused (:nodes workspace))
-                :visible (some-in-tree :visible (:nodes workspace))})
+                :focused (or (and (empty? (:nodes workspace))
+                                  (some-in-tree :focused (:nodes display)))
+                             (some-in-tree :focused (:nodes workspace)))
+                :visible (or (empty? (:nodes workspace))
+                             (some-in-tree :visible (:nodes workspace)))})
              nodes))))
    []
    (get-displays)))
