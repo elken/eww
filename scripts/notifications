@@ -12,11 +12,14 @@
   (binding [*in* rdr]
     (loop []
       (when-let [line (-> (read-line) (json/parse-string true) :class)]
-        (println
-         (condp re-find line
-           #"^(inhibited-)?notification" "<span foreground='red'><sup></sup></span>"
-           #"^(inhibited-)?none" ""
-           #"^dnd-(inhibited-)?notification" "<span foreground='red'><sup></sup></span>"
-           #"^(dnd-inhibited-)?none" ""
-           "miss"))
+        (let [line (if (vector? line)
+                     (first line)
+                     line)]
+          (println
+           (condp re-find line
+             #"^(inhibited-)?notification" "<span foreground='red'><sup></sup></span>"
+             #"^(inhibited-)?none" ""
+             #"^dnd-(inhibited-)?notification" "<span foreground='red'><sup></sup></span>"
+             #"^(dnd-inhibited-)?none" ""
+             "miss")))
         (recur)))))
