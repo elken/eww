@@ -1,0 +1,45 @@
+#!/usr/bin/env bb
+(require '[babashka.process :refer [shell process destroy-tree]])
+
+(defn cmd [cmd]
+  (->> cmd
+       (shell {:out :string})
+       :out
+       str/split-lines
+       first))
+
+(defn sink-status []
+  (cmd "wpctl get-volume @DEFAULT_AUDIO_SINK@"))
+
+(defn source-status []
+  (cmd "wpctl get-volume @DEFAULT_AUDIO_SOURCE@"))
+
+(defn status->volume [status]
+  (let [[_ volume status] (str/split status #" ")]
+    {:muted (string? status)
+     :volume (some-> volume
+                     parse-double
+                     (* 100)
+                     int)}))
+
+(def pw-stream
+  (process
+   {:err :inherit
+    :shutdown destroy-tree}
+   "pw-mon"))
+
+(defn volume-status []
+  (->> {:sink (status->volume (sink-status))
+        :source (status->volume (source-status))}
+       json/generate-string
+       println))
+
+(volume-status)
+
+(with-open [rdr (io/reader (:out pw-stream))]
+  (binding [*in* rdr]
+    (loop []
+      (when-let [line (read-line)]
+        (when (= line "changed:")
+          (volume-status)))
+      (recur))))

@@ -18,7 +18,7 @@ $nord-unfocused: #8e95a4;
 
 * {
   all: unset; //Unsets everything so you can style everything from scratch
-  font-family: FontAwesome, Montserrat, Helvetica, Arial, sans-serif;
+  font-family: 'Symbols Nerd Font Mono', Montserrat, Helvetica, Arial, sans-serif;
   font-size: 13px;
 }
 
@@ -133,7 +133,7 @@ $comps: ram, cpu;
 }
 
 .window-wrapper {
-		padding: 0 1rem;
+    padding: 0 1rem;
 }
 
 .window-wrapper image {
@@ -239,5 +239,9 @@ tooltip {
 }
 
 .notifications-wrapper {
-		padding: 0 10px;
+    padding: 0 10px;
+}
+
+.volume-wrapper .muted {
+  color: $nord11;
 }

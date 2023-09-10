@@ -1,0 +1,12 @@
+#!/usr/bin/env bb
+(require '[babashka.process :refer [shell]])
+
+(try
+  (let [[source volume] *command-line-args*]
+    (when (and source volume)
+      (shell
+       (format
+        "wpctl set-volume -l 1.0 %s %f "
+        source
+        (/ (parse-double volume) 100.0)))))
+  (catch Exception _))

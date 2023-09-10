@@ -1,9 +1,9 @@
 ;; Widget variables
 (defpoll battery :interval "5s" "scripts/battery")
 (deflisten music-status :initial "" "scripts/music-status")
-(defpoll volume-status :interval "1s" "scripts/volume")
 (defpoll ram-usage :interval "1s" "scripts/ram-usage")
 (defpoll time :interval "1s" "date '+%a %b %d, %Y  %H:%M'")
+(deflisten volume-status "scripts/volume-status")
 (deflisten window :initial "" "scripts/window-name")
 (deflisten workspaces :initial "" "scripts/workspaces")
 (deflisten notifications :inital "" "scripts/notifications")
@@ -44,14 +44,16 @@
               :value {value ?: 0}
               :onchange onchange)))
 
-(defwidget icon-pill [icon name icon-class]
+(defwidget icon-pill [icon name icon-class on-icon-click]
   (box :class "${name}__wrapper icon-pill"
        :orientation "h"
        :space-evenly false
        :halign "center"
-       (label
-        :class "icon-pill__icon ${name}__icon ${icon-class}"
-        :text icon)
+       (button
+        :onclick on-icon-click
+        (label
+         :class "icon-pill__icon ${name}__icon ${icon-class}"
+         :text icon))
        (children)))
 
 (defwidget system-bar [value]
@@ -72,6 +74,7 @@
     :name "music"
     :icon {music-status.status == "playing" ? " " : " "}
     :icon-class {music-status.status}
+    :on-icon-click "playerctl play-pause"
     (metric
      :label "${music-status.artist} - ${music-status.title}"
      :value {round(music-status.position / music-status.length * 100, 0)}
@@ -85,20 +88,22 @@
    :visible {volume-status != ""}
    (icon-pill
     :name "volume-sink"
-    :icon " "
-    :icon-class "volume-sink"
+    :icon "${volume-status.sink.muted ? '󰝟' : '󰕾'}"
+    :icon-class "volume-sink ${volume-status.sink.muted ? 'muted' :''}"
+    :on-icon-click "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
     (scale :min 0
            :max 101
-           :value {volume-status.sink}
-           :onchange "./scripts/volume @DEFAULT_AUDIO_SINK@ {}"))
+           :value {volume-status.sink.volume}
+           :onchange "./scripts/set-volume @DEFAULT_AUDIO_SINK@ {}"))
    (icon-pill
     :name "volume-source"
-    :icon "  "
-    :icon-class "volume-source"
+    :icon "${volume-status.source.muted ? '󰍭' : '󰍬'}"
+    :icon-class "volume-source ${volume-status.source.muted ? 'muted' :''}"
+    :on-icon-click "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
     (scale :min 0
            :max 101
-           :value {volume-status.source}
-           :onchange "./scripts/volume @DEFAULT_AUDIO_SOURCE@ {}"))))
+           :value {volume-status.source.volume}
+           :onchange "./scripts/set-volume @DEFAULT_AUDIO_SOURCE@ {}"))))
 
 (defwidget cpu []
   (eventbox
@@ -107,6 +112,7 @@
     :name "cpu"
     :icon ""
     :icon-class "cpu"
+    :on-icon-click ""
     (box
      :orientation "h"
      :space-evenly false
@@ -132,6 +138,7 @@
    :name "ram"
    :icon ""
    :icon-class "ram"
+    :on-icon-click ""
    (box
     :orientation "h"
     :space-evenly false
@@ -145,17 +152,18 @@
    :name "clock"
    :icon ""
    :icon-class "clock"
+   :on-icon-click ""
    (label
     :text time)))
 
 (defwidget swaync []
-					 (box :class "notifications-wrapper"
-								(button
-								 :visible "which swaync-client"
-								 :onclick "sleep 0.1; swaync-client -t -sw"
-								 :onrightclick "sleep 0.1; swaync-client -d -sw"
-								 (box
-									(label :markup {notifications})))))
+           (box :class "notifications-wrapper"
+                (button
+                 :visible "which swaync-client"
+                 :onclick "sleep 0.1; swaync-client -t -sw"
+                 :onrightclick "sleep 0.1; swaync-client -d -sw"
+                 (box
+                  (label :markup {notifications})))))
 
 (defwidget left [index]
   (workspace-widget
@@ -184,7 +192,7 @@
    (clock)
    (systray :pack-direction "ltr"
             :icon-size 16)
-	 (swaync)))
+     (swaync)))
 
 ;; TODO Make this much less crap...
 
