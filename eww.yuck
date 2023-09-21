@@ -81,29 +81,37 @@
      :onchange ""))))
 
 (defwidget volume []
-  (box
-   :orientation "h"
-   :space-evenly false
-   :class "volume-wrapper"
-   :visible {volume-status != ""}
-   (icon-pill
-    :name "volume-sink"
-    :icon "${volume-status.sink.muted ? '󰝟' : '󰕾'}"
-    :icon-class "volume-sink ${volume-status.sink.muted ? 'muted' :''}"
-    :on-icon-click "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-    (scale :min 0
-           :max 101
-           :value {volume-status.sink.volume}
-           :onchange "./scripts/set-volume @DEFAULT_AUDIO_SINK@ {}"))
-   (icon-pill
-    :name "volume-source"
-    :icon "${volume-status.source.muted ? '󰍭' : '󰍬'}"
-    :icon-class "volume-source ${volume-status.source.muted ? 'muted' :''}"
-    :on-icon-click "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-    (scale :min 0
-           :max 101
-           :value {volume-status.source.volume}
-           :onchange "./scripts/set-volume @DEFAULT_AUDIO_SOURCE@ {}"))))
+           (box
+            :orientation "h"
+            :visible {volume-status != ""}
+            (icon-pill
+             :name "volume-sink"
+             :icon "${volume-status.sink.muted ? '󰝟' : '󰕾'}"
+             :icon-class "volume-sink ${volume-status.sink.muted ? 'muted' :''}"
+             :on-icon-click "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+             (box
+              :orientation "h"
+              :space-evenly false
+              :class "volume-wrapper"
+              (scale :min 0
+                     :max 101
+                     :value {volume-status.sink.volume}
+                     :orientation "v"
+                     :onchange "./scripts/set-volume @DEFAULT_AUDIO_SINK@ {}")))
+            (icon-pill
+             :name "volume-source"
+             :icon "${volume-status.source.muted ? '󰍭' : '󰍬'}"
+             :icon-class "volume-source ${volume-status.source.muted ? 'muted' :''}"
+             :on-icon-click "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+             (box
+              :orientation "h"
+              :space-evenly false
+              :class "volume-wrapper"
+              (scale :min 0
+                     :max 101
+                     :value {volume-status.source.volume}
+                     :orientation "v"
+                     :onchange "./scripts/set-volume @DEFAULT_AUDIO_SOURCE@ {}")))))
 
 (defwidget cpu []
   (eventbox
@@ -138,7 +146,7 @@
    :name "ram"
    :icon ""
    :icon-class "ram"
-    :on-icon-click ""
+   :on-icon-click ""
    (box
     :orientation "h"
     :space-evenly false

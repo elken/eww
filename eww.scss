@@ -100,7 +100,7 @@ scale.horizontal trough {
   }
 }
 
-$comps: ram, cpu;
+$comps: ram, cpu, volume;
 @each $comp in $comps {
   .#{$comp}-wrapper {
     margin: 2px 8px 2px 2px;
@@ -242,6 +242,7 @@ tooltip {
     padding: 0 10px;
 }
 
-.volume-wrapper .muted {
+.volume-sink.muted ,
+.volume-source.muted {
   color: $nord11;
 }
